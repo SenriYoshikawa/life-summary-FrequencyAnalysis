@@ -42,16 +42,24 @@ for i in range(1, len(sys.argv)):
             FAbs = np.abs(F)[0:math.ceil(len(F)/2)] / activeDays.count(1)
 
             #FFT結果の絶対値
-
             plt.subplot(223)
             plt.plot(FAbs)
             plt.title("FFT result")
 
             #FFT結果の絶対値
             plt.subplot(224)
-            plt.plot(FAbs)
-            plt.title("FFT result detail")
-            plt.ylim(0,2000)
+            q = math.ceil(len(FAbs) / 4)
+            quarter = np.array([math.ceil(sum(FAbs[0:q])),
+                               math.ceil(sum(FAbs[q:q*2])),
+                               math.ceil(sum(FAbs[q*2:q*3])),
+                               math.ceil(sum(FAbs[q*3:q*4]))])
+            plt.pie(quarter,
+                    labels = ["q1", "q2", "q3", "q4"],
+                    counterclock=False,
+                    startangle=90,
+                    autopct="%1.1f%%")
+            plt.axis('equal')
+            plt.title("Frequency ratio")
 
 
             plt.subplots_adjust(wspace=0.4, hspace=0.6)
