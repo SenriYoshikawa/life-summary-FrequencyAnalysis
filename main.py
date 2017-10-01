@@ -9,21 +9,19 @@ for i in range(1, len(sys.argv)):
     reader = csv.reader(infile)
 
     data_list = []
-    pre_date = next(reader)[0][0:-3]
+    activeDays = [0 for i in range(32)]
+    pre_date = next(reader)[0]
     infile.seek(0)
 
     for row in reader:
-        date = row[0][0:-3]
+        date = row[0]
 
-        #if date[0][-2:] == "01" and date[1] == "00:00":
-        #    month = [0 for i in range(31)]
-
-        if pre_date != date:
-            print(sys.argv[i][0:-4] + "-" + pre_date + " exported")
+        if pre_date[0:-3] != date[0:-3]:
+            print(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + " exported")
             plt.clf()
             plt.figure(1)
 
-            plt.suptitle(sys.argv[i][0:-4] + "'s data in" + pre_date)
+            plt.suptitle(sys.argv[i][0:-4] + "'s data in" + pre_date[0:-3])
 
             # 毎月1日の午前８時から午後８時をサンプルとして描画
             plt.subplot(221)
@@ -37,26 +35,33 @@ for i in range(1, len(sys.argv)):
             plt.plot(data_list)
             plt.title("A month activity volume")
             plt.xticks([0, 20160, 40320, 60480, 80640], ["1", "7", "14", "21", "28"])
-            plt.ylim(-16, 16)
+            plt.ylim(-16, 20)
+            plt.text(50000,17, str(activeDays.count(1)) + " active days", fontsize = 7)
+
+            F = np.fft.fft(data_list)
+            FAbs = np.abs(F)[0:math.ceil(len(F)/2)] / activeDays.count(1)
 
             #FFT結果の絶対値
-            F = np.fft.fft(data_list)
+
             plt.subplot(223)
-            plt.plot(np.abs(F)[0:math.ceil(len(F)/2)])
+            plt.plot(FAbs)
             plt.title("FFT result")
 
             #FFT結果の絶対値
             plt.subplot(224)
-            plt.plot(np.abs(F)[0:math.ceil(len(F)/2)])
+            plt.plot(FAbs)
             plt.title("FFT result detail")
             plt.ylim(0,2000)
 
 
             plt.subplots_adjust(wspace=0.4, hspace=0.6)
-            plt.savefig(sys.argv[i][0:-4] + "-" + pre_date + ".png")
+            plt.savefig(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + ".png")
 
             data_list.clear()
             pre_date = date
+
+        if date[-2:] == "01" and row[1] == "00:00":
+            activeDays = [0 for i in range(32)]
 
         if len(row) > 2:
             data_list.append(0 if (row[2] == 'x' or row[2] == 'X') else int(row[2], 16))
@@ -65,5 +70,5 @@ for i in range(1, len(sys.argv)):
             else:
                 data_list.append(0)
 
-        #if data_list[-1] != 0 or data_list[-2] != 0:
-        #    month[int(date[0][-2:])] = 1
+        if data_list[-1] != 0 or data_list[-2] != 0:
+            activeDays[int(date[-2:])] = 1
