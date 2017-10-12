@@ -19,12 +19,18 @@ for i in range(1, len(sys.argv)):
         if pre_date[0:-3] != date[0:-3]:
 
             # 一定以下の居間の0は1とみなす
-            #for j in range(len(data_list) - 1):
-            #    if data_list[j] == 1 and data_list[j+1] == 0:
-            #        for k in range(min(120, len(data_list) - j)):
-            #            if data_list[j+k] != -1:
-            #                data_list[j+k] = 1
-            #        j += k
+            for j in range(len(data_list) - 1):
+                if data_list[j] == 1 and data_list[j+1] == 0:
+                    j += 1
+                    for k in range(min(60, len(data_list) - j)):
+                        if data_list[j + k] == -1:
+                            j += k
+                            break
+                        elif data_list[j + k] == 1:
+                            for m in range(k):
+                                data_list[j + m] = 1
+                            j += k
+                            break
 
             plt.clf()
             # plt.figure(figsize = (16,12))
@@ -34,7 +40,7 @@ for i in range(1, len(sys.argv)):
 
             # 毎月1日の午前８時から午後８時をサンプルとして描画
             plt.subplot(221)
-            plt.xticks([0, 240, 480, 720],["8","12","16","20"])
+            plt.xticks([0, 320, 640, 960],["8","12","16","20"])
             plt.plot(data_list[960:1920], linewidth = 0.1)
             plt.title("day 1")
 
