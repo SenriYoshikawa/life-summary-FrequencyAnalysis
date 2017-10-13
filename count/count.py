@@ -6,6 +6,7 @@ import math
 
 for i in range(1, len(sys.argv)):
     infile = open(sys.argv[i], 'r')
+    outfile = open(sys.argv[i][:-4] + "-result.csv", 'w')
     reader = csv.reader(infile)
 
     data_list = []
@@ -70,9 +71,11 @@ for i in range(1, len(sys.argv)):
                 FAbs[np.isnan(FAbs)] = 0
                 q = math.ceil(len(FAbs) / 4)
 
-                each_sum = [math.ceil(sum(FAbs[0:q])), math.ceil(sum(FAbs[q:q * 2])), math.ceil(sum(FAbs[q * 2:q * 3])),
-                            math.ceil(sum(FAbs[q * 3:q * 4]))]
-                quarter = np.array(each_sum)
+                quarter = [math.ceil(sum(FAbs[0:q])),
+                                    math.ceil(sum(FAbs[q:q * 2])),
+                                    math.ceil(sum(FAbs[q * 2:q * 3])),
+                                    math.ceil(sum(FAbs[q * 3:q * 4]))]
+
                 plt.pie(quarter,
                         labels=["q1", "q2", "q3", "q4"],
                         counterclock=False,
@@ -81,6 +84,13 @@ for i in range(1, len(sys.argv)):
                 plt.axis('equal')
                 plt.title("Frequency ratio")
                 plt.title("FFT result")
+
+                qsum = sum(quarter)
+                outfile.write(pre_date[:-3] + ',' +
+                            str(quarter[0] / qsum) + ',' +
+                            str(quarter[0] / qsum) + ',' +
+                            str(quarter[0] / qsum) + ',' +
+                            str(quarter[0] / qsum) + '\n')
 
             plt.subplots_adjust(wspace=0.4, hspace=0.6)
             plt.savefig(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + ".png")
@@ -105,6 +115,3 @@ for i in range(1, len(sys.argv)):
         if data_list[-1] != 0 or data_list[-2] != 0:
             activeDays[int(date[-2:])] = 1
 
-    #outfile = open(sys.argv[i] + "-result.txt", 'w')
-    #for j in range(len(result)):
-    #    outfile.write(result[j][0] + ',' + result[j][1] + ',' + result[j][2] + ',' + result[j][3])
