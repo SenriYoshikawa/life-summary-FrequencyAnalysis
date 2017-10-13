@@ -10,7 +10,9 @@ for i in range(1, len(sys.argv)):
     reader = csv.reader(infile)
 
     data_list = []
-    result = [[]]
+    result_data = [[] for j in range(4)]
+    result_date = []
+
     activeDays = [0 for i in range(32)]
     pre_date = next(reader)[0]
     infile.seek(0)
@@ -92,6 +94,12 @@ for i in range(1, len(sys.argv)):
                             str(quarter[0] / qsum) + ',' +
                             str(quarter[0] / qsum) + '\n')
 
+                result_date.append(pre_date[:-3])
+                result_data[0].append(quarter[0] / qsum * 100)
+                result_data[1].append(quarter[1] / qsum * 100)
+                result_data[2].append(quarter[2] / qsum * 100)
+                result_data[3].append(quarter[3] / qsum * 100)
+
             plt.subplots_adjust(wspace=0.4, hspace=0.6)
             plt.savefig(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + ".png")
             print(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + " exported")
@@ -115,3 +123,16 @@ for i in range(1, len(sys.argv)):
         if data_list[-1] != 0 or data_list[-2] != 0:
             activeDays[int(date[-2:])] = 1
 
+    plt.clf()
+    plt.plot(result_data[0], "-o", label="Q1")
+    plt.plot(result_data[1], "-o", label="Q2")
+    plt.plot(result_data[2], "-o", label="Q3")
+    plt.plot(result_data[3], "-o", label="Q4")
+
+    plt.xlabel("month")
+    q = math.ceil(len(result_date) / 3)
+    plt.xticks([0, q, q*2, q*3], [result_date[0], result_date[q], result_date[q*2], result_date[-1]])
+    plt.ylabel("%")
+    plt.title(sys.argv[i][0:-4] + "each frequent rate")
+
+    plt.savefig(sys.argv[i][0:-4] + "-result.png")
