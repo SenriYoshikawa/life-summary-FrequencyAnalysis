@@ -63,7 +63,8 @@ for i in range(1, len(sys.argv)):
                 # FFT結果の絶対値
                 plt.subplot(223)
                 plt.plot(freqList, FAbs)
-                plt.ylim(0, 20)
+                plt.xscale("log")
+                plt.ylim(0, 1000)
                 plt.title("FFT result")
 
                 # FFT結果の円グラフ
