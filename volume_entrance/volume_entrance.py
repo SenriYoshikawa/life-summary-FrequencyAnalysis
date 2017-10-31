@@ -16,7 +16,12 @@ for i in range(1, len(sys.argv)):
     infile = open(sys.argv[i], 'r')
     sys.argv[i] = sys.argv[i][sys.argv[i].rfind('/') + 1:]
     sys.argv[i] = sys.argv[i][sys.argv[i].rfind('\\') + 1:]
-    os.mkdir(sys.argv[i][:-4])
+
+    try:
+        os.mkdir(sys.argv[i][:-4])
+    except FileExistsError:
+        pass
+
     sys.argv[i] = sys.argv[i][:-4] + '/' + sys.argv[i]
     outfile = open(sys.argv[i][:-4] + "-result.csv", 'w')
     reader = csv.reader(infile)
@@ -31,21 +36,6 @@ for i in range(1, len(sys.argv)):
         date = row[0]
 
         if pre_date[0:-3] != date[0:-3]:
-
-            # 12時間未満の居間1に含まれた居間玄関0は居間1とみなす
-            for j in range(len(data_list) - 1):
-                if data_list[j] == 1 and data_list[j + 1] == 0:
-                    j += 1
-                    for k in range(min(1440, len(data_list) - j)):
-                        if data_list[j + k] == -1:
-                            j += k
-                            break
-                        elif data_list[j + k] == 1:
-                            for m in range(k):
-                                data_list[j + m] = 1
-                            j += k
-                            break
-
             plt.clf()
             # plt.figure(figsize = (16,12))
             plt.figure(1)
@@ -54,17 +44,17 @@ for i in range(1, len(sys.argv)):
 
             # 毎月1日の午前８時から午後８時をサンプルとして描画
             plt.subplot(221)
-            plt.xticks([0, 320, 640, 960], ["8", "12", "16", "20"])
-            plt.plot(data_list[960:1920], linewidth=0.1)
+            plt.xticks([0, 160, 320, 480], ["8", "12", "16", "20"])
+            plt.plot(data_list[480:960], linewidth=0.1)
             plt.title("day 1")
 
             # 一ヶ月
             plt.subplot(222)
             plt.plot(data_list, linewidth=0.1)
             plt.title("A month activity volume")
-            plt.xticks([0, 20160, 40320, 60480, 80640], ["1", "7", "14", "21", "28"])
-            plt.ylim(-2, 2)
-            plt.text(50000, 1.5, str(activeDays.count(1)) + " active days", fontsize=7)
+            plt.xticks([0, 10080, 20160, 30240, 40320], ["1", "7", "14", "21", "28"])
+            plt.ylim(0, 18)
+            plt.text(25000, 16.5, str(activeDays.count(1)) + " active days", fontsize=7)
 
             # データがある月はFFTを計算
             if activeDays.count(1) != 0:
@@ -76,7 +66,7 @@ for i in range(1, len(sys.argv)):
                 plt.subplot(223)
                 plt.plot(freqList, FAbs)
                 plt.xscale("log")
-                plt.ylim(0, 1000)
+                #plt.ylim(0, 1000)
                 plt.title("FFT result")
 
                 # FFT結果の円グラフ
@@ -115,16 +105,11 @@ for i in range(1, len(sys.argv)):
         if date[-2:] == "01" and row[1] == "00:00":
             activeDays = [0 for i in range(32)]
 
-        if len(row) > 2:
-            data_list.append(0 if (row[2] == 'x' or row[2] == 'X' or row[2] == "0") else 1)
-            if len(row) > 3:
-                data_list.append(0 if (row[3] == 'x' or row[3] == 'X' or row[3] == "0") else -1)
-            else:
-                data_list.append(0)
+        if len(row) > 3:
+            data_list.append(0 if (row[3] == 'x' or row[3] == 'X' or row[3] == "0") else int(row[3], 16))
         else:
             data_list.append(0)
-            data_list.append(0)
 
-        if data_list[-1] != 0 or data_list[-2] != 0:
+        if data_list[-1] != 0:
             activeDays[int(date[-2:])] = 1
 
