@@ -44,6 +44,7 @@ for i in range(1, len(sys.argv)):
 
             # 毎月1日の午前８時から午後８時をサンプルとして描画
             plt.subplot(221)
+            plt.ylim(-16, 16)
             plt.xticks([0, 320, 640, 960], ["8", "12", "16", "20"])
             plt.plot(data_list[960:1920], linewidth=0.1)
             plt.title("day 1")
@@ -53,8 +54,8 @@ for i in range(1, len(sys.argv)):
             plt.plot(data_list, linewidth=0.1)
             plt.title("A month activity volume")
             plt.xticks([0, 20160, 40320, 60480, 80640], ["1", "7", "14", "21", "28"])
-            plt.ylim(-2, 2)
-            plt.text(50000, 1.5, str(activeDays.count(1)) + " active days", fontsize=7)
+            plt.ylim(-16, 20)
+            plt.text(50000, 17, str(activeDays.count(1)) + " active days", fontsize=7)
 
             # データがある月はFFTを計算
             if activeDays.count(1) != 0:
