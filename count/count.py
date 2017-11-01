@@ -3,9 +3,24 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import glob
+import os
+
+if len(sys.argv) > 0 and sys.argv[1].find('csv') == -1:
+    sys.argv.extend(glob.glob(sys.argv[1] + '*.csv'))
+    del sys.argv[1]
 
 for i in range(1, len(sys.argv)):
     infile = open(sys.argv[i], 'r')
+    sys.argv[i] = sys.argv[i][sys.argv[i].rfind('/') + 1:]
+    sys.argv[i] = sys.argv[i][sys.argv[i].rfind('\\') + 1:]
+
+    try:
+        os.mkdir(sys.argv[i][:-4])
+    except FileExistsError:
+        pass
+
+    sys.argv[i] = sys.argv[i][:-4] + '/' + sys.argv[i]
     outfile = open(sys.argv[i][:-4] + "-result.csv", 'w')
     reader = csv.reader(infile)
 
