@@ -20,8 +20,7 @@ for i in range(1, len(sys.argv)):
     except FileExistsError:
         pass
 
-    sys.argv[i] = sys.argv[i][:-4] + '/' + sys.argv[i]
-    outfile = open(sys.argv[i][:-4] + "-result.csv", 'w')
+    outfile = open(sys.argv[i][:-4] + '/' + sys.argv[i] + "-result.csv", 'w')
     reader = csv.reader(infile)
 
     data_list = []
@@ -40,7 +39,7 @@ for i in range(1, len(sys.argv)):
             plt.figure(figsize = (16,12))
             # plt.figure(1)
 
-            plt.suptitle(sys.argv[i][0:-4] + "'s data in" + pre_date[0:-3] + 'volume')
+            plt.suptitle(sys.argv[i][0:-4] + "'s data in" + pre_date[0:-3] + ' volume')
 
             # 毎月1日の午前８時から午後８時をサンプルとして描画
             plt.subplot(221)
@@ -60,7 +59,7 @@ for i in range(1, len(sys.argv)):
             # データがある月はFFTを計算
             if activeDays.count(1) != 0:
                 F = np.fft.fft(data_list)
-                freqList = np.fft.fftfreq(len(F), d=60)[0:math.ceil(len(F) / 2)]
+                freqList = np.fft.fftfreq(len(F), d=30)[0:math.ceil(len(F) / 2)]
                 FAbs = np.abs(F)[0:math.ceil(len(F) / 2)] / activeDays.count(1)
 
                 # FFT結果の絶対値
@@ -103,15 +102,15 @@ for i in range(1, len(sys.argv)):
                 result_data[3].append(quarter[3] / qsum * 100)
 
                 # fft結果ファイル出力
-                fft_result_file = open(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + "-fft.csv", 'w')
+                fft_result_file = open(sys.argv[i][:-4] + '/' + sys.argv[i][:-4] + "-" + pre_date[0:-3] + "-fft.csv", 'w')
                 for k in range(len(freqList) - 1):
                     fft_result_file.write(str(freqList[k]) + ',' + str(FAbs[k]) + '\n')
                 fft_result_file.close()
 
             plt.subplots_adjust(wspace=0.4, hspace=0.6)
-            plt.savefig(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + ".png")
+            plt.savefig(sys.argv[i][:-4] + '/' + sys.argv[i][:-4] + "-" + pre_date[0:-3] + ".png")
             plt.close()
-            print(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + " exported")
+            print(sys.argv[i][:-4] + "-" + pre_date[0:-3] + " exported")
 
             data_list.clear()
             pre_date = date
@@ -144,4 +143,4 @@ for i in range(1, len(sys.argv)):
     plt.ylabel("%")
     plt.title(sys.argv[i][0:-4] + "each frequent rate")
 
-    plt.savefig(sys.argv[i][0:-4] + "-result.png")
+    plt.savefig(sys.argv[i][0:-4] + '/' + sys.argv[i][0:-4] + "-result.png")
