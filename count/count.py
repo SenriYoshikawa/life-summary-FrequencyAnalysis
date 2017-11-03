@@ -81,7 +81,7 @@ for i in range(1, len(sys.argv)):
                 plt.subplot(223)
                 plt.plot(freqList, FAbs)
                 plt.xscale("log")
-                plt.ylim(0, 1000)
+                plt.ylim(0, np.average(FAbs) * 200)
                 plt.title("FFT result")
 
                 # FFT結果の円グラフ
