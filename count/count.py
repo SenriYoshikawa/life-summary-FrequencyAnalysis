@@ -1,6 +1,7 @@
 import sys
 import csv
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tick
 import numpy as np
 import math
 import glob
@@ -52,8 +53,8 @@ for i in range(1, len(sys.argv)):
                             break
 
             plt.clf()
-            # plt.figure(figsize = (16,12))
-            plt.figure(1)
+            plt.figure(figsize=(16,12))
+            # plt.figure(1)
 
             plt.suptitle(sys.argv[i][0:-4] + "'s data in" + pre_date[0:-3] + 'count')
 
@@ -74,14 +75,14 @@ for i in range(1, len(sys.argv)):
             # データがある月はFFTを計算
             if activeDays.count(1) != 0:
                 F = np.fft.fft(data_list)
-                freqList = np.fft.fftfreq(len(F), d=1.0 / 2)[0:math.ceil(len(F) / 2)]
+                freqList = np.fft.fftfreq(len(F), d=30)[0:math.ceil(len(F) / 2)]
                 FAbs = np.abs(F)[0:math.ceil(len(F) / 2)] / activeDays.count(1)
 
                 # FFT結果の絶対値
                 plt.subplot(223)
-                plt.plot(freqList, FAbs)
+                plt.plot(freqList[1:], FAbs[1:])
                 plt.xscale("log")
-                plt.ylim(0, np.average(FAbs) * 200)
+                plt.grid(which="both")
                 plt.title("FFT result")
 
                 # FFT結果の円グラフ
@@ -116,9 +117,17 @@ for i in range(1, len(sys.argv)):
                 result_data[2].append(quarter[2] / qsum * 100)
                 result_data[3].append(quarter[3] / qsum * 100)
 
+                # fft結果ファイル出力
+                fft_result_file = open(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + "-fft.csv", 'w')
+                for k in range(len(freqList) - 1):
+                    fft_result_file.write(str(freqList[k]) + ',' + str(FAbs[k]) + '\n')
+                fft_result_file.close()
+
             plt.subplots_adjust(wspace=0.4, hspace=0.6)
             plt.savefig(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + ".png")
+            plt.close()
             print(sys.argv[i][0:-4] + "-" + pre_date[0:-3] + " exported")
+
 
             data_list.clear()
             pre_date = date
