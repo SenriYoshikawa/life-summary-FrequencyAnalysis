@@ -59,7 +59,7 @@ for i in range(1, len(sys.argv)):
             # データがある月はFFTを計算
             if activeDays.count(1) != 0:
                 F = np.fft.fft(data_list)
-                freqList = np.fft.fftfreq(len(F), d=1.0 / 2)[0:math.ceil(len(F) / 2)]
+                freqList = np.fft.fftfreq(len(F), d=60)[0:math.ceil(len(F) / 2)]
                 FAbs = np.abs(F)[0:math.ceil(len(F) / 2)] / activeDays.count(1)
 
                 # FFT結果の絶対値
