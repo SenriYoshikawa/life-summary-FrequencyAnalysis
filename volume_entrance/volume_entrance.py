@@ -40,7 +40,7 @@ for i in range(1, len(sys.argv)):
             # plt.figure(figsize = (16,12))
             plt.figure(1)
 
-            plt.suptitle(sys.argv[i][0:-4] + "'s data in" + pre_date[0:-3])
+            plt.suptitle(sys.argv[i][0:-4] + "'s data in" + pre_date[0:-3] + 'volume entrance')
 
             # 毎月1日の午前８時から午後８時をサンプルとして描画
             plt.subplot(221)
